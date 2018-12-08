@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -11,27 +13,38 @@ namespace Server
 {
     class Program
     {
-            static Context Database;
-            static ServerObject server;
-            static Thread listenThread;
-            static void Main(string[] args)
-                {
-                try
+            private const int port = 8888;
+            private static TcpListener listener;
+        static void Main(string[] args)
+        {
+            try
             {
-                server = new ServerObject();
-                Database = new Context();
-                listenThread = new Thread(server.Listen);
-                listenThread.Start();
+                listener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
+                listener.Start();
+                Console.WriteLine("Ожидание подключений");
+                while (true)
+                {
+                    TcpClient client = listener.AcceptTcpClient();
+                    ClientObject clientObject = new ClientObject(client);
+                    Thread clientThread = new Thread(clientObject.Process);
+                    clientThread.Start();
+                }
+
             }
+
             catch (Exception ex)
             {
-                server.Disconnect();
                 Console.WriteLine(ex.Message);
             }
-
-               
-
+            finally
+            {
+                if (listener != null)
+                {
+                    listener.Stop();
+                }
             }
+
+        }
     }
     
 }

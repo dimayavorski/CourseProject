@@ -38,6 +38,8 @@
             this.txtProfit = new System.Windows.Forms.TextBox();
             this.txtExpense = new System.Windows.Forms.TextBox();
             this.btnGetProfitAbility = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // comboBox1
@@ -50,9 +52,9 @@
             // 
             // ShowProjectInfo
             // 
-            this.ShowProjectInfo.Location = new System.Drawing.Point(261, 67);
+            this.ShowProjectInfo.Location = new System.Drawing.Point(261, 70);
             this.ShowProjectInfo.Name = "ShowProjectInfo";
-            this.ShowProjectInfo.Size = new System.Drawing.Size(172, 29);
+            this.ShowProjectInfo.Size = new System.Drawing.Size(192, 26);
             this.ShowProjectInfo.TabIndex = 1;
             this.ShowProjectInfo.Text = "Показать информацию";
             this.ShowProjectInfo.UseVisualStyleBackColor = true;
@@ -88,7 +90,7 @@
             this.outputBox.Location = new System.Drawing.Point(58, 232);
             this.outputBox.Multiline = true;
             this.outputBox.Name = "outputBox";
-            this.outputBox.Size = new System.Drawing.Size(327, 130);
+            this.outputBox.Size = new System.Drawing.Size(457, 175);
             this.outputBox.TabIndex = 5;
             // 
             // ShowProfitAbility
@@ -125,11 +127,31 @@
             this.btnGetProfitAbility.UseVisualStyleBackColor = true;
             this.btnGetProfitAbility.Click += new System.EventHandler(this.btnGetProfitAbility_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(521, 282);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(49, 17);
+            this.label1.TabIndex = 10;
+            this.label1.Text = "Доход";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(521, 324);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(65, 17);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Затраты";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.btnGetProfitAbility);
             this.Controls.Add(this.txtExpense);
             this.Controls.Add(this.txtProfit);
@@ -160,6 +182,8 @@
         private System.Windows.Forms.TextBox txtProfit;
         private System.Windows.Forms.TextBox txtExpense;
         private System.Windows.Forms.Button btnGetProfitAbility;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
     }
 }
 

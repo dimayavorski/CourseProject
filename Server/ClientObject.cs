@@ -11,39 +11,23 @@ namespace Server
 {
     public class ClientObject
     {
-        protected internal string Id { get; private set; }
         protected internal NetworkStream Stream { get; private set; }
-        string userName;
         TcpClient client;
         public Context database;
-        ServerObject server;
-        public ClientObject(TcpClient tcpClient, ServerObject serverObject)
+        public ClientObject(TcpClient tcpClient)
         {
-            Id = Guid.NewGuid().ToString();
+            
             client = tcpClient;
-            server = serverObject;
-            serverObject.AddConnection(this);
             database = new Context();
 
         }
         public void Process()
         {
+            
             try
             {
                 string message;
                 Stream = client.GetStream();
-                //message = GetMessage();
-                //string namesOfProjects ="";
-                //int i = 0;
-                //foreach (var project in database.Projects)
-                //{
-                //    namesOfProjects += project.Name+",";
-                //    i++;
-                //}
-                //namesOfProjects = namesOfProjects.Substring(0, namesOfProjects.Length - 1);
-                //server.BroadcastMessage(namesOfProjects, this.Id);
-                //Console.WriteLine(namesOfProjects);
-                
                 while (true)
                 {
                     try
@@ -54,32 +38,31 @@ namespace Server
                         if (message.Contains("Проекты"))
                         {
                             string namesOfProjects = "";
-                            int i = 0;
+                          
                             foreach (var project in database.Projects)
                             {
-                                namesOfProjects += project.Name + ",";
-                                i++;
+                                message += project.Name + ",";
+                            
                             }
-                            namesOfProjects = namesOfProjects.Substring(0, namesOfProjects.Length - 1);
-                            server.BroadcastMessage(namesOfProjects, this.Id);
-                            Console.WriteLine(namesOfProjects);
+                            message = message.Substring(0, message.Length - 1);
+                            SendMessage(message);
+                            Console.WriteLine(message);
                         }
                         else 
                         if (database.Projects.Where(proj => proj.Name == message).FirstOrDefault() != null)
                         {
                             var obj = database.Projects.Where(proj => proj.Name == message).FirstOrDefault();
-                            
-                            //var response = database.People.Where(p => p.ProjectId == obj.Id).Count();
-                            
-                            message = String.Format("{0} доход", obj.Profit);
-                            Console.WriteLine(message);
-                            server.BroadcastMessage(message, this.Id);
-                            message = String.Format("{0} расход", obj.Expense);
-                            Console.WriteLine(message);
-                            server.BroadcastMessage(message, this.Id);
-                            message =String.Format("Количество человек в проекте {0}",database.People.Where(p => p.ProjectId == obj.Id).Count().ToString());
-                            Console.WriteLine(message);
-                            server.BroadcastMessage(message, this.Id);
+
+                            var people = database.People.Where(p => p.ProjectId == obj.Id);
+                            message = null;
+                            foreach (var human in people)
+                            {
+                                message += String.Format("{0} {1} {2} возвраст: {3} \r\n", human.Name, human.FirstName,
+                                    human.LastName, human.Age);
+                            }
+                            message += String.Format("{0} доход \r\n{1} расход \r\n", obj.Profit,obj.Expense);
+                            message += String.Format("Количество человек в проекте {0} \r\n", database.People.Where(p => p.ProjectId == obj.Id).Count().ToString());
+                            SendMessage(message);
 
                         }
                         else 
@@ -89,7 +72,7 @@ namespace Server
                             string some = splitted[1];
                             var obj = database.Projects.Where(pr => pr.Name==some).FirstOrDefault();
                             message = String.Format("Рентабельность = {0}%",Project.GetProfitAbility(obj.Profit, obj.Expense));
-                            server.BroadcastMessage(message,this.Id);
+                            SendMessage(message);
                             Console.WriteLine(message);
                         }
                         else if (message.Contains("Посчитать"))
@@ -97,31 +80,25 @@ namespace Server
                             string[] splitted = message.Split('|');
                             double profit = Convert.ToDouble(splitted[1]);
                             double expense = Convert.ToDouble(splitted[2]);
-                            server.BroadcastMessage("Результат вашей операции",this.Id);
+                            SendMessage("Результат \r\n");
                             Thread.Sleep(100);
-                            message = String.Format("{0} доход",profit);
+                            message = String.Format("{0} доход \r\n", profit);
                             Console.WriteLine(message);
-                            server.BroadcastMessage(message, this.Id);
+                            SendMessage(message);
                             Thread.Sleep(100);
-                            message = String.Format("{0} расход",expense);
+                            message = String.Format("{0} расход \r\n", expense);
                             Console.WriteLine(message);
-                            server.BroadcastMessage(message, this.Id);
+                            SendMessage(message);
                             Thread.Sleep(100);
                             message = String.Format("Рентабельность = {0}%", Project.GetProfitAbility(profit,expense));
-                            server.BroadcastMessage(message,this.Id);
+                            SendMessage(message);
                             Console.WriteLine(message);
 
                         }
-
-
-                        //else
-                        //{
-                        //    message.Split(',');
-                        //}
                     }
                     catch
                     {
-                        message = String.Format("{0}:покинул чат", userName);
+                        message = String.Format("покинул чат");
                         Console.WriteLine(message);
                         break;
                     }
@@ -151,7 +128,12 @@ namespace Server
             } while (Stream.DataAvailable);
             return builder.ToString();
         }
-  
+
+        public void SendMessage(string message)
+        {
+            byte[] data = Encoding.Unicode.GetBytes(message);
+            Stream.Write(data, 0, data.Length);
+        }
         protected internal void Close()
         {
             if (Stream != null)

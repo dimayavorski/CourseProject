@@ -30,67 +30,80 @@ namespace Client
         {
             
         }
-        public void ReceiveData()
-        {
+        //public void ReceiveData()
+        //{
 
-            while (true)
-            {
+        //    while (true)
+        //    {
               
-                    byte[] data = new byte[64]; // буфер для получаемых данных 
-                    StringBuilder builder = new StringBuilder();
-                    int bytes = 0;
-                    do
-                    {
-                        bytes = stream.Read(data, 0, data.Length);
-                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-                    }
-                    while (stream.DataAvailable);
-                    string message = builder.ToString();
-                    string[] names = message.Split(',');
-                    Invoke(new MethodInvoker(() =>
-                    {
+        //            byte[] data = new byte[64]; // буфер для получаемых данных 
+        //            StringBuilder builder = new StringBuilder();
+        //            int bytes = 0;
+        //            do
+        //            {
+        //                bytes = stream.Read(data, 0, data.Length);
+        //                builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+        //            }
+        //            while (stream.DataAvailable);
+        //            string message = builder.ToString();
+        //            string[] names = message.Split(',');
+        //            Invoke(new MethodInvoker(() =>
+        //            {
                         
-                        outputBox.Text += message + "\r\n";
+        //                outputBox.Text += message;
                         
 
-                    }));
+        //            }));
 
 
                 
                
 
-            }
+        //    }
 
-        }
+        //}
         public void ReceiveMessage()
         {
+            while (true)
+            {
 
-            
-                
-                    byte[] data = new byte[64]; // буфер для получаемых данных 
-                    StringBuilder builder = new StringBuilder();
-                    int bytes = 0;
-                    do
-                    {
-                        bytes = stream.Read(data, 0, data.Length);
-                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-                    }
-                    while (stream.DataAvailable);
-                    string message = builder.ToString();
+
+                byte[] data = new byte[64]; // буфер для получаемых данных 
+                StringBuilder builder = new StringBuilder();
+                int bytes = 0;
+                do
+                {
+                    bytes = stream.Read(data, 0, data.Length);
+                    builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                } while (stream.DataAvailable);
+
+                string message = builder.ToString();
+                if (message.Contains("Проекты"))
+                {
+                    message = message.Substring(7);
                     string[] names = message.Split(',');
+
                     Invoke(new MethodInvoker(() =>
                     {
-                        
+
                         comboBox1.Items.AddRange(names);
                         comboBox1.SelectedItem = names[0];
 
                     }));
+                }
+                else
+                {
+                    string[] names = message.Split(',');
+                    Invoke(new MethodInvoker(() => { outputBox.Text += message; }));
+                }
+            }
 
 
-                
-                
 
-            
+
+
+
+
 
         }
         static void SendMessage(string message)
@@ -101,14 +114,10 @@ namespace Client
         }
         private void ShowProjectInfo_Click(object sender, EventArgs e)
         {
-            
-           
-            var message = comboBox1.SelectedItem.ToString();
             outputBox.Clear();
-            
-            receiveThread = new Thread(ReceiveData);
-            receiveThread.Start();
+            var message = comboBox1.SelectedItem.ToString();
             SendMessage(message);
+            
 
         }
         //static void Disconnect()
@@ -131,8 +140,7 @@ namespace Client
                 stream = client.GetStream();
                 string message = userName;
                 message = "Проекты";
-                byte[] data = Encoding.Unicode.GetBytes(message);
-                stream.Write(data, 0, data.Length);
+                SendMessage(message);
                 receiveThread = new Thread(ReceiveMessage);
                 receiveThread.Start();
                 messageLabel.Text = "Добро пожаловать " + userName;
@@ -150,8 +158,6 @@ namespace Client
            
             string values = outputBox.Text;
             string message = "Рентабельность|"+comboBox1.SelectedItem.ToString();
-            
-
             SendMessage(message);
 
         }

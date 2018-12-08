@@ -54,11 +54,10 @@
     <Compile Include="Helper.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Model\Context.cs" />
-    <Compile Include="Model\Human.cs" />
+    <Compile Include="Model\People.cs" />
     <Compile Include="Model\Project.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServerObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

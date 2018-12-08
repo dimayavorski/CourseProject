@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Server.Model
 {
-    [Serializable]
+   
     public class Project
     {
         public int Id { get; set; }
