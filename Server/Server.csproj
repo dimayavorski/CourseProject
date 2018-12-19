@@ -51,11 +51,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientObject.cs" />
-    <Compile Include="Helper.cs" />
-    <Compile Include="Message.cs" />
     <Compile Include="Model\Context.cs" />
     <Compile Include="Model\People.cs" />
     <Compile Include="Model\Project.cs" />
+    <Compile Include="Model\User.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
